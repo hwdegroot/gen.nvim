@@ -306,8 +306,8 @@ M.exec = function(options)
         text = string.gsub(text, "%$register_([%w*+:/\"])", function(r_name)
             local register = vim.fn.getreg(r_name)
             if not register or register:match("^%s*$") then
-                error("Prompt uses $register_" .. r_name .. " but register " ..
-                          r_name .. " is empty")
+                error("Prompt uses $register_" .. rname .. " but register " ..
+                          rname .. " is empty")
             end
             return register
         end)
@@ -392,11 +392,6 @@ M.exec = function(options)
             local json = opts.json(body, false)
             globals.temp_filename = os.tmpname()
             local fhandle = io.open(globals.temp_filename, "w")
-            if (not fhandle) then
-                vim.notify("Gen.nvim error: Unable to create temporary file",
-                   vim.log.levels.ERROR)
-                return
-            end
             fhandle:write(json)
             fhandle:close()
             cmd = string.gsub(cmd, "%$body", "@" .. globals.temp_filename)
@@ -413,9 +408,7 @@ M.exec = function(options)
 end
 
 M.run_command = function(cmd, opts)
-    if opts.debug then
-        vim.print('run_command', cmd, opts)
-    end
+    -- vim.print('run_command', cmd, opts)
     if globals.result_buffer == nil or globals.float_win == nil or
         not vim.api.nvim_win_is_valid(globals.float_win) then
         create_window(cmd, opts)
@@ -580,7 +573,7 @@ end, {
     end
 })
 
-function Process_response(str, _, json_response)
+function Process_response(str, json_response)
     if string.len(str) == 0 then return end
     local text
 
